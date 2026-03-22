@@ -1,0 +1,32 @@
+# local planning / AI docs
+CLAUDE.md
+dsbro_master_plan.md
+
+# python cache
+__pycache__/
+*.py[cod]
+
+# virtual envs
+.venv/
+venv/
+env/
+
+# build artifacts
+build/
+dist/
+*.egg-info/
+
+# test / lint cache
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# notebook junk
+.ipynb_checkpoints/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
