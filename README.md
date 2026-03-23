@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="imgs/dsbro.png" alt="dsbro logo" width="320">
+</p>
+
 # dsbro
 
 Your Data Science Bro. One import away.
@@ -8,13 +12,16 @@ experiments, and local Jupyter workflows.
 
 ## Status
 
-This repository is being built in phases. The current foundation includes:
+This repository is being built in phases. The current implemented modules include:
 
 - Packaging and project scaffold
 - Shared helpers and plotting themes
 - `dsbro.utils`
 - `dsbro.io`
-- Pytest coverage for the foundation modules
+- `dsbro.eda`
+- `dsbro.prep`
+- `dsbro.viz`
+- Pytest coverage for the implemented modules
 
 ## Installation
 
@@ -30,6 +37,7 @@ import dsbro
 dsbro.setup()
 train = dsbro.io.load("train.csv")
 preview = dsbro.io.peek("train.csv", n=3)
+report = dsbro.eda.overview(train)
 ```
 
 ## Roadmap
@@ -53,4 +61,3 @@ ruff check dsbro/ tests/
 ruff format dsbro/ tests/
 python -m build
 ```
-
