@@ -33,6 +33,7 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.svm import SVC, SVR
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 
+from dsbro._helpers import _print_dataframe, _print_header
 from dsbro.metrics import classification_report, regression_report
 
 
@@ -163,7 +164,7 @@ def _make_model_registry(task: str) -> dict[str, Any]:
             "SVM": SVC(probability=True, random_state=42),
             "KNN": KNeighborsClassifier(),
             "DecisionTree": DecisionTreeClassifier(random_state=42),
-            "AdaBoost": AdaBoostClassifier(random_state=42, algorithm="SAMME"),
+            "AdaBoost": AdaBoostClassifier(random_state=42),
         }
     else:
         models = {
@@ -340,7 +341,14 @@ def compare(
             ascending=[True, _primary_sort_ascending(inferred_task)],
             na_position="last",
         )
-    return leaderboard.reset_index(drop=True)
+    leaderboard = leaderboard.reset_index(drop=True)
+    display = leaderboard.copy()
+    float_columns = display.select_dtypes(include=["float"]).columns
+    if len(float_columns) > 0:
+        display[float_columns] = display[float_columns].round(4)
+    _print_header("Model Compare")
+    _print_dataframe(display)
+    return leaderboard
 
 
 def cross_validate(

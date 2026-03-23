@@ -7,7 +7,12 @@ from typing import Any
 
 import numpy as np
 import pandas as pd
-from pandas.api.types import is_datetime64_any_dtype, is_numeric_dtype
+from pandas.api.types import (
+    is_datetime64_any_dtype,
+    is_numeric_dtype,
+    is_object_dtype,
+    is_string_dtype,
+)
 from sklearn.feature_selection import VarianceThreshold
 from sklearn.model_selection import KFold, StratifiedKFold
 from sklearn.preprocessing import (
@@ -402,7 +407,7 @@ def reduce_memory(df: pd.DataFrame, verbose: bool = True) -> pd.DataFrame:
             transformed[column] = pd.to_numeric(series, downcast="integer")
         elif pd.api.types.is_float_dtype(series):
             transformed[column] = pd.to_numeric(series, downcast="float")
-        elif series.dtype == "object":
+        elif is_object_dtype(series) or is_string_dtype(series):
             unique_ratio = series.nunique(dropna=False) / max(len(series), 1)
             if unique_ratio <= 0.8:
                 transformed[column] = series.astype("category")

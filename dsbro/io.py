@@ -16,6 +16,11 @@ from dsbro._helpers import (
     _detect_text_encoding,
     _ensure_path,
     _format_size,
+    _print_dataframe,
+    _print_divider,
+    _print_header,
+    _print_kv,
+    _print_sub_header,
     _safe_import,
 )
 
@@ -239,23 +244,41 @@ def peek(path: str | Path, n: int = 5) -> Any:
 
     if suffix in _TABULAR_SUFFIXES or suffix in {".csv", ".tsv"}:
         data = load(file_path)
-        return data.head(n)
+        preview = data.head(n)
+        _print_sub_header(f"Peek: {file_path.name} (first {n} rows)")
+        _print_dataframe(preview)
+        return preview
     if suffix == ".json":
         data = load(file_path)
         if isinstance(data, pd.DataFrame):
-            return data.head(n)
+            preview = data.head(n)
+            _print_sub_header(f"Peek: {file_path.name} (first {n} rows)")
+            _print_dataframe(preview)
+            return preview
         if isinstance(data, list):
-            return data[:n]
+            preview = data[:n]
+            _print_sub_header(f"Peek: {file_path.name} (first {n} items)")
+            print(preview)
+            return preview
         if isinstance(data, dict):
-            return dict(list(data.items())[:n])
+            preview = dict(list(data.items())[:n])
+            _print_sub_header(f"Peek: {file_path.name} (first {n} items)")
+            print(preview)
+            return preview
     if suffix in _IMAGE_SUFFIXES:
         image = load(file_path)
-        return {"shape": tuple(image.shape), "dtype": str(image.dtype)}
+        preview = {"shape": tuple(image.shape), "dtype": str(image.dtype)}
+        _print_sub_header(f"Peek: {file_path.name}")
+        print(preview)
+        return preview
 
     encoding = _detect_text_encoding(file_path) or "utf-8"
     with file_path.open("r", encoding=encoding) as handle:
         lines = [line.rstrip("\n") for _, line in zip(range(n), handle)]
-    return "\n".join(lines)
+    preview = "\n".join(lines)
+    _print_sub_header(f"Peek: {file_path.name} (first {n} lines)")
+    print(preview)
+    return preview
 
 
 def find(path: str | Path, pattern: str) -> list[Path]:
@@ -328,6 +351,13 @@ def fileinfo(path: str | Path) -> dict[str, Any]:
 
     if target.is_dir():
         info["file_count"] = sum(1 for candidate in target.rglob("*") if candidate.is_file())
+        _print_header(f"File Info: {target.name}")
+        _print_kv("Name", target.name)
+        _print_kv("Size", info["size"])
+        _print_kv("Type", "directory")
+        _print_kv("Files", info["file_count"])
+        _print_kv("Modified", pd.Timestamp(stats.st_mtime, unit="s").strftime("%Y-%m-%d"))
+        _print_divider()
         return info
 
     encoding = _detect_text_encoding(target)
@@ -344,6 +374,18 @@ def fileinfo(path: str | Path) -> dict[str, Any]:
         except (ImportError, ValueError):
             pass
 
+    _print_header(f"File Info: {target.name}")
+    _print_kv("Name", target.name)
+    _print_kv("Size", info["size"])
+    _print_kv("Type", target.suffix.lower() or "file")
+    if "encoding" in info:
+        _print_kv("Encoding", info["encoding"])
+    if "line_count" in info and info["line_count"] is not None:
+        _print_kv("Lines", info["line_count"])
+    if "shape" in info:
+        _print_kv("Shape", info["shape"])
+    _print_kv("Modified", pd.Timestamp(stats.st_mtime, unit="s").strftime("%Y-%m-%d"))
+    _print_divider()
     return info
 
 

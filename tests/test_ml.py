@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import re
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -55,11 +57,14 @@ def reg_df() -> pd.DataFrame:
     return frame
 
 
-def test_compare_returns_leaderboard(cls_df: pd.DataFrame):
+def test_compare_returns_leaderboard(cls_df: pd.DataFrame, capsys):
     leaderboard = compare(cls_df, target="target", cv=2)
 
+    captured = capsys.readouterr()
     assert "model" in leaderboard.columns
     assert (leaderboard["status"] == "ok").any()
+    assert "Model Compare" in captured.out
+    assert re.search(r"\b\d+\.\d{4}\b", captured.out)
 
 
 def test_train_returns_model_predictions_and_summary(cls_df: pd.DataFrame):

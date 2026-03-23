@@ -104,3 +104,48 @@ def _get_total_memory_bytes() -> int | None:
 
     return None
 
+
+def _print_header(title: str, width: int = 50) -> None:
+    """Print a clean section header."""
+    print(f"\n{'.' * width}")
+    print(f"  {title}")
+    print(f"{'.' * width}\n")
+
+
+def _print_sub_header(title: str, width: int = 50) -> None:
+    """Print a sub-section header."""
+    del width
+    print(f"\n  --- {title} ---\n")
+
+
+def _print_divider(width: int = 50) -> None:
+    """Print a simple divider line."""
+    print(f"{'.' * width}")
+
+
+def _print_kv(key: str, value: Any, key_width: int = 15) -> None:
+    """Print a key-value pair aligned."""
+    print(f"  {key:<{key_width}} {value}")
+
+
+def _print_dataframe(df: Any) -> None:
+    """Print a DataFrame-like object without wrapping columns."""
+    try:
+        import pandas as pd
+    except ImportError:
+        print(df)
+        return
+
+    if isinstance(df, pd.DataFrame):
+        with pd.option_context(
+            "display.width",
+            200,
+            "display.max_columns",
+            None,
+            "display.max_colwidth",
+            20,
+        ):
+            print(df.to_string())
+        return
+
+    print(df)

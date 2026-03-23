@@ -71,6 +71,14 @@ def test_overview_returns_shape_and_column_summary(eda_df: pd.DataFrame):
     assert len(result["sample"]) == 3
 
 
+def test_overview_prints_formatted_report(eda_df: pd.DataFrame, capsys):
+    overview(eda_df, sample_size=3)
+
+    captured = capsys.readouterr()
+    assert "Dataset Overview" in captured.out
+    assert "--- Column Summary ---" in captured.out
+
+
 def test_describe_plus_includes_extra_metrics(eda_df: pd.DataFrame):
     summary = describe_plus(eda_df)
 
@@ -135,6 +143,14 @@ def test_duplicates_returns_examples(eda_df: pd.DataFrame):
 
     assert result["duplicate_count"] >= 1
     assert not result["examples"].empty
+
+
+def test_duplicates_prints_summary(eda_df: pd.DataFrame, capsys):
+    duplicates(eda_df, subset=["num_a", "num_b", "cat_a", "cat_b"])
+
+    captured = capsys.readouterr()
+    assert "Duplicates" in captured.out
+    assert "Percentage" in captured.out
 
 
 def test_value_counts_plot_returns_counts_and_axis(eda_df: pd.DataFrame):

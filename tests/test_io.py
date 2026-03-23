@@ -68,6 +68,21 @@ def test_fileinfo_reports_tabular_metadata(temp_data_dir):
     assert info["encoding"] == "utf-8"
 
 
+def test_peek_prints_header(temp_data_dir, capsys):
+    peek(temp_data_dir / "sample.csv", n=2)
+
+    captured = capsys.readouterr()
+    assert "--- Peek: sample.csv (first 2 rows) ---" in captured.out
+
+
+def test_fileinfo_prints_formatted_summary(temp_data_dir, capsys):
+    fileinfo(temp_data_dir / "sample.csv")
+
+    captured = capsys.readouterr()
+    assert "File Info: sample.csv" in captured.out
+    assert "Modified" in captured.out
+
+
 def test_merge_csvs_combines_matches(temp_data_dir):
     merged = merge_csvs(temp_data_dir)
 

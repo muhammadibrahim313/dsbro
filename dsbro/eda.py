@@ -14,6 +14,14 @@ from matplotlib.figure import Figure
 from pandas.api.types import is_bool_dtype, is_numeric_dtype
 from scipy.stats import chi2_contingency, ks_2samp
 
+from dsbro._helpers import (
+    _format_size,
+    _print_dataframe,
+    _print_divider,
+    _print_header,
+    _print_kv,
+    _print_sub_header,
+)
 from dsbro._themes import apply_matplotlib_theme
 
 
@@ -88,7 +96,9 @@ def _prepare_plot(
 
 def _finalize_plot(figure: Figure, show: bool) -> None:
     """Finalize a matplotlib figure."""
-    figure.tight_layout()
+    for axis in figure.axes:
+        _style_axis(axis)
+    plt.tight_layout()
     if show:
         plt.show()
 
@@ -110,11 +120,38 @@ def _add_bar_labels(axis: Axes) -> None:
             (patch.get_x() + patch.get_width() / 2, height),
             ha="center",
             va="bottom",
-            fontsize=9,
+            fontsize=8,
             color="#e0e0e0",
             xytext=(0, 3),
             textcoords="offset points",
+            clip_on=False,
         )
+    axis.margins(y=0.15)
+
+
+def _style_axis(axis: Axes) -> None:
+    """Apply consistent dsbro axis styling."""
+    title = axis.get_title()
+    xlabel = axis.get_xlabel()
+    ylabel = axis.get_ylabel()
+    if title:
+        axis.set_title(title, fontsize=14, fontweight="bold", color="#e0e0e0")
+    if xlabel:
+        axis.set_xlabel(xlabel, fontsize=11, color="#cccccc")
+    if ylabel:
+        axis.set_ylabel(ylabel, fontsize=11, color="#cccccc")
+    axis.tick_params(axis="both", colors="#cccccc", labelsize=10)
+
+    legend = axis.get_legend()
+    if legend is not None:
+        legend.get_frame().set_facecolor("#1a1a2e")
+        legend.get_frame().set_edgecolor("#444444")
+        legend.get_title().set_color("#e0e0e0")
+        for text in legend.get_texts():
+            text.set_color("#e0e0e0")
+
+    for spine in axis.spines.values():
+        spine.set_color("#555555")
 
 
 def _series_to_categories(series: pd.Series) -> pd.Series:
@@ -266,7 +303,7 @@ def overview(df: pd.DataFrame, sample_size: int = 5) -> dict[str, Any]:
     )
 
     duplicate_count = int(data.duplicated().sum())
-    return {
+    result = {
         "shape": data.shape,
         "rows": len(data),
         "columns": len(data.columns),
@@ -277,6 +314,19 @@ def overview(df: pd.DataFrame, sample_size: int = 5) -> dict[str, Any]:
         "column_summary": column_summary,
         "sample": data.head(sample_size),
     }
+    _print_header("Dataset Overview")
+    _print_kv("Rows", result["rows"])
+    _print_kv("Columns", result["columns"])
+    _print_kv("Memory", _format_size(result["memory_bytes"]))
+    _print_kv(
+        "Duplicates",
+        f"{result['duplicate_count']} ({result['duplicate_pct']:.1f}%)",
+    )
+    _print_divider()
+    _print_sub_header("Column Summary")
+    _print_dataframe(result["column_summary"])
+    _print_divider()
+    return result
 
 
 def describe_plus(df: pd.DataFrame) -> pd.DataFrame:
@@ -318,6 +368,8 @@ def describe_plus(df: pd.DataFrame) -> pd.DataFrame:
         summary.loc[numeric_cols, "skew"] = data[numeric_cols].skew(numeric_only=True)
         summary.loc[numeric_cols, "kurtosis"] = data[numeric_cols].kurt(numeric_only=True)
 
+    _print_header("Describe Plus")
+    _print_dataframe(summary)
     return summary
 
 
@@ -350,6 +402,9 @@ def missing(
             "missing_pct": (data.isna().mean() * 100).round(2),
         }
     ).sort_values(["missing", "missing_pct"], ascending=False)
+
+    _print_header("Missing Values")
+    _print_dataframe(summary)
 
     if not plot:
         return summary
@@ -427,7 +482,14 @@ def distribution(
         axis = axes.flat[index]
         series = data[column]
         if is_numeric_dtype(series):
-            sns.histplot(series.dropna(), bins=bins, kde=True, ax=axis, color="#00d4ff")
+            sns.histplot(
+                series.dropna(),
+                bins=bins,
+                kde=True,
+                ax=axis,
+                color="#00d4ff",
+                line_kws={"linewidth": 2},
+            )
             axis.set_ylabel("Count")
         else:
             counts = _series_to_categories(series).value_counts().head(15)
@@ -439,6 +501,7 @@ def distribution(
         axis.set_xlabel(column)
 
     _hide_unused_axes(axes, len(selected))
+    figure.subplots_adjust(hspace=0.4, wspace=0.3)
     _finalize_plot(figure, show)
     return figure, axes
 
@@ -495,9 +558,18 @@ def correlate(
     if not plot:
         return matrix
 
-    figure, axes = _prepare_plot(1, ncols=1, figsize_per_plot=(7.0, 5.0))
+    figsize = (12.0, 10.0) if len(matrix.columns) >= 6 else (7.0, 5.0)
+    figure, axes = _prepare_plot(1, ncols=1, figsize_per_plot=figsize)
     axis = axes.flat[0]
-    sns.heatmap(matrix, annot=True, cmap="mako", vmin=-1, vmax=1, ax=axis)
+    sns.heatmap(
+        matrix,
+        annot=True,
+        annot_kws={"size": 7},
+        cmap="mako",
+        vmin=-1,
+        vmax=1,
+        ax=axis,
+    )
     axis.set_title("Feature Correlation")
     _finalize_plot(figure, show)
     return matrix, figure, axis
@@ -588,7 +660,7 @@ def outliers(
     if not plot:
         return summary
 
-    figure, axes = _prepare_plot(1, ncols=1, figsize_per_plot=(7.0, 4.5))
+    figure, axes = _prepare_plot(1, ncols=1, figsize_per_plot=(12.0, 6.0))
     axis = axes.flat[0]
     melted = data[selected].melt(var_name="column", value_name="value").dropna()
     sns.boxplot(data=melted, x="value", y="column", ax=axis, color="#00d4ff")
@@ -688,6 +760,7 @@ def compare(
                 {label_left: left_counts, label_right: right_counts}
             ).fillna(0)
             compare_frame.head(10).plot(kind="bar", ax=axis)
+            _add_bar_labels(axis)
             axis.tick_params(axis="x", rotation=45)
             axis.set_ylabel("Share")
         axis.set_title(f"Compare: {column}")
@@ -827,7 +900,10 @@ def cardinality(df: pd.DataFrame, threshold: float = 0.5) -> pd.DataFrame:
         }
     )
     summary["high_cardinality"] = summary["unique_pct"] >= threshold
-    return summary.sort_values("unique_count", ascending=False).reset_index(drop=True)
+    summary = summary.sort_values("unique_count", ascending=False).reset_index(drop=True)
+    _print_header("Cardinality")
+    _print_dataframe(summary)
+    return summary
 
 
 def duplicates(
@@ -865,12 +941,17 @@ def duplicates(
     mask = data.duplicated(subset=selected_subset, keep="first")
     duplicate_rows = data.loc[mask].head(sample_size)
     duplicate_count = int(mask.sum())
-    return {
+    result = {
         "duplicate_count": duplicate_count,
         "duplicate_pct": float((duplicate_count / len(data) * 100) if len(data) else 0.0),
         "subset": selected_subset,
         "examples": duplicate_rows,
     }
+    _print_header("Duplicates")
+    _print_kv("Count", result["duplicate_count"])
+    _print_kv("Percentage", f"{result['duplicate_pct']:.1f}%")
+    _print_divider()
+    return result
 
 
 def value_counts_plot(
@@ -954,6 +1035,8 @@ def numeric_summary(df: pd.DataFrame) -> pd.DataFrame:
     summary["skew"] = data[numeric_cols].skew(numeric_only=True)
     summary["kurtosis"] = data[numeric_cols].kurt(numeric_only=True)
     summary["missing_pct"] = (data[numeric_cols].isna().mean() * 100).round(2)
+    _print_header("Numeric Summary")
+    _print_dataframe(summary)
     return summary
 
 
@@ -991,7 +1074,10 @@ def categorical_summary(df: pd.DataFrame) -> pd.DataFrame:
                 "missing_pct": float(data[column].isna().mean() * 100),
             }
         )
-    return pd.DataFrame(rows).set_index("column")
+    summary = pd.DataFrame(rows).set_index("column")
+    _print_header("Categorical Summary")
+    _print_dataframe(summary)
+    return summary
 
 
 def drift(
@@ -1085,13 +1171,29 @@ def profile(
         True
     """
     data = _validate_dataframe(df)
+    overview_result = overview(data)
+    describe_result = describe_plus(data)
+
+    missing_result: pd.DataFrame | tuple[pd.DataFrame, Figure, Axes]
+    if data.isna().any().any():
+        missing_result = missing(data, plot=True, show=show)
+        missing_summary = missing_result[0]
+        missing_plot = missing_result
+    else:
+        missing_summary = missing(data, plot=False)
+        missing_plot = None
+
+    cardinality_result = cardinality(data)
+    numeric_result = numeric_summary(data)
+    categorical_result = categorical_summary(data)
+
     results: dict[str, Any] = {
-        "overview": overview(data),
-        "describe_plus": describe_plus(data),
-        "missing": missing(data, plot=False),
-        "cardinality": cardinality(data),
-        "numeric_summary": numeric_summary(data),
-        "categorical_summary": categorical_summary(data),
+        "overview": overview_result,
+        "describe_plus": describe_result,
+        "missing": missing_summary,
+        "cardinality": cardinality_result,
+        "numeric_summary": numeric_result,
+        "categorical_summary": categorical_result,
     }
 
     if len(data.columns) > 1:
@@ -1106,10 +1208,7 @@ def profile(
     else:
         results["target_analysis"] = None
 
-    if data.isna().any().any():
-        results["missing_plot"] = missing(data, plot=True, show=show)
-    else:
-        results["missing_plot"] = None
+    results["missing_plot"] = missing_plot
 
     return results
 

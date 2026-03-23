@@ -6,7 +6,7 @@ import dsbro
 
 
 def test_version_returns_semver_like_string():
-    assert dsbro.version() == "0.1.0"
+    assert dsbro.version() == "0.2.0"
 
 
 def test_about_returns_project_metadata(capsys):
@@ -14,7 +14,9 @@ def test_about_returns_project_metadata(capsys):
 
     captured = capsys.readouterr()
     assert "Your Data Science Bro" in about_text
-    assert "dsbro 0.1.0" in captured.out
+    assert "dsbro 0.2.0" in captured.out
+    assert "Homepage: https://ibrahimqasmi.com" in captured.out
+    assert "GitHub: https://github.com/muhammadibrahim313/dsbro" in captured.out
 
 
 def test_help_supports_module_and_function_queries(capsys):
