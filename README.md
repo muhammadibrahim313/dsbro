@@ -4,10 +4,10 @@
 
 # dsbro
 
-[![Python](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org/)
-[![PyPI](https://img.shields.io/pypi/v/dsbro.svg)](https://pypi.org/project/dsbro/)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/muhammadibrahim313/dsbro/blob/main/LICENSE)
-[![Repo](https://img.shields.io/badge/github-dsbro-black.svg)](https://github.com/muhammadibrahim313/dsbro)
+[![CI](https://github.com/muhammadibrahim313/dsbro/actions/workflows/ci.yml/badge.svg)](https://github.com/muhammadibrahim313/dsbro/actions/workflows/ci.yml)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![PyPI version](https://img.shields.io/pypi/v/dsbro.svg)](https://pypi.org/project/dsbro/)
 
 Your Data Science Bro. One import away.
 
@@ -139,3 +139,7 @@ python -m build
 ## License
 
 MIT. See [LICENSE](https://github.com/muhammadibrahim313/dsbro/blob/main/LICENSE).
+
+## Contributing
+
+We welcome contributions! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
