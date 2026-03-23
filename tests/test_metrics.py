@@ -21,19 +21,31 @@ def test_classification_report_returns_expected_keys():
     assert "log_loss" in report
 
 
+def test_classification_report_omits_probability_metrics_without_y_prob():
+    report = classification_report([0, 1, 1, 0], [0, 1, 0, 0])
+
+    assert "auc" not in report
+    assert "log_loss" not in report
+
+
 def test_regression_report_returns_expected_keys():
-    report = regression_report([1.0, 2.0, 3.0], [1.0, 2.2, 2.8], n_features=1)
+    report = regression_report([1.0, 2.0, 3.0], [1.0, 2.2, 2.8])
 
     assert "rmse" in report
-    assert "adjusted_r2" in report
+    assert "median_ae" in report
+    assert "explained_variance" in report
 
 
-def test_metric_supports_auc_and_rmse():
+def test_metric_supports_default_accuracy_auc_rmse_and_mse():
+    accuracy_value = metric([0, 1, 1, 0], [0, 1, 0, 0])
     auc_value = metric([0, 1, 1, 0], [0.1, 0.9, 0.8, 0.2], name="auc")
     rmse_value = metric([1.0, 2.0], [1.0, 2.5], name="rmse")
+    mse_value = metric([1.0, 2.0], [1.0, 2.5], name="mse")
 
+    assert accuracy_value == 0.75
     assert round(auc_value, 4) == 1.0
     assert rmse_value > 0
+    assert mse_value > 0
 
 
 def test_all_metrics_returns_task_specific_dicts():

@@ -392,7 +392,7 @@ def cross_validate(
             probabilities = _maybe_predict_probabilities(pipeline, X_valid, y_series)
             metrics = classification_report(y_valid, predictions, probabilities)
         else:
-            metrics = regression_report(y_valid, predictions, n_features=X_frame.shape[1])
+            metrics = regression_report(y_valid, predictions)
         metrics["fold"] = fold
         fold_rows.append(metrics)
 

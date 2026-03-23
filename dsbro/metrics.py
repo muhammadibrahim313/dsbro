@@ -96,9 +96,6 @@ def classification_report(
         except ValueError:
             report["auc"] = np.nan
             report["log_loss"] = np.nan
-    else:
-        report["auc"] = np.nan
-        report["log_loss"] = np.nan
 
     return report
 
@@ -106,14 +103,12 @@ def classification_report(
 def regression_report(
     y_true: Any,
     y_pred: Any,
-    n_features: int | None = None,
 ) -> dict[str, float]:
     """Compute a compact regression metric report.
 
     Args:
         y_true: Ground-truth values.
         y_pred: Predicted values.
-        n_features: Optional number of input features for adjusted R-squared.
 
     Returns:
         A dictionary of regression metrics.
@@ -128,22 +123,17 @@ def regression_report(
     rmse = float(np.sqrt(mean_squared_error(true, pred)))
     r2 = float(r2_score(true, pred))
 
-    adjusted_r2 = np.nan
-    if n_features is not None and len(true) > n_features + 1:
-        adjusted_r2 = float(1 - (1 - r2) * (len(true) - 1) / (len(true) - n_features - 1))
-
     return {
         "rmse": rmse,
         "mae": float(mean_absolute_error(true, pred)),
         "mape": float(mean_absolute_percentage_error(true, pred)),
         "r2": r2,
-        "adjusted_r2": adjusted_r2,
         "median_ae": float(median_absolute_error(true, pred)),
         "explained_variance": float(explained_variance_score(true, pred)),
     }
 
 
-def metric(y_true: Any, y_pred: Any, name: str = "auc") -> float:
+def metric(y_true: Any, y_pred: Any, name: str = "accuracy") -> float:
     """Compute a single named metric.
 
     Args:
@@ -163,6 +153,7 @@ def metric(y_true: Any, y_pred: Any, name: str = "auc") -> float:
     true, pred = _validate_shapes(y_true, y_pred)
 
     regression_metrics = {
+        "mse": lambda: float(mean_squared_error(true, pred)),
         "rmse": lambda: float(np.sqrt(mean_squared_error(true, pred))),
         "mae": lambda: float(mean_absolute_error(true, pred)),
         "mape": lambda: float(mean_absolute_percentage_error(true, pred)),
@@ -235,10 +226,10 @@ def competition_score(y_true: Any, y_pred: Any, metric: str = "rmse") -> float:
         >>> competition_score([1.0, 2.0], [1.0, 2.0], metric="rmse")
         0.0
     """
-    return metric_fn(y_true, y_pred, metric)
+    return _metric_alias(y_true, y_pred, metric)
 
 
-def metric_fn(y_true: Any, y_pred: Any, metric_name: str) -> float:
+def _metric_alias(y_true: Any, y_pred: Any, metric_name: str) -> float:
     """Internal alias-safe wrapper around metric()."""
     return metric(y_true, y_pred, name=metric_name)
 
