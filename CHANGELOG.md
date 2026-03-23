@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.2.1] - 2026-03-24
+
+### Added
+- Refreshed README with v0.2.0 project overview, badges, dependency guidance, and notebook-platform sections
+- Rebuilt the quickstart notebook as a fuller end-to-end tutorial for setup, EDA, prep, visualization, ML, metrics, and text utilities
+
+### Fixed
+- `dsbro.about()` now shows the GitHub homepage and website as separate fields
+
 ## [0.2.0] - 2026-03-24
 
 ### Added

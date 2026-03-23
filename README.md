@@ -1,3 +1,4 @@
+<!-- logo placeholder -->
 <p align="center">
   <img src="https://raw.githubusercontent.com/muhammadibrahim313/dsbro/main/imgs/dsbro.png" alt="dsbro logo" width="320">
 </p>
@@ -8,138 +9,158 @@
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PyPI version](https://img.shields.io/pypi/v/dsbro.svg)](https://pypi.org/project/dsbro/)
+[![Downloads](https://img.shields.io/pypi/dm/dsbro.svg)](https://pypistats.org/packages/dsbro)
 
 Your Data Science Bro. One import away.
 
-`dsbro` is a lightweight Python toolkit for notebook-heavy data science work. It is built for the
-repeated workflow most people have in Kaggle, Colab, and local Jupyter notebooks: setup, load
-data, inspect it, clean it, visualize it, and train a baseline model fast.
-
-## What dsbro covers
-
-- `dsbro.utils`: notebook setup, seeding, timers, system info, downloads, simple parallel work
-- `dsbro.io`: file loading, saving, previews, directory trees, file search, submission helpers
-- `dsbro.eda`: overview tables, missing-value analysis, drift checks, target analysis, comparisons
-- `dsbro.prep`: encoding, scaling, missing-value filling, feature engineering, memory reduction
-- `dsbro.viz`: themed matplotlib and optional plotly charts for fast notebook visuals
-- `dsbro.metrics`: classification and regression metrics in one place
-- `dsbro.ml`: model comparison, cross-validation, training, tuning, stacking, pseudo-labeling
-- `dsbro.text`: text cleaning, tokenization, word frequencies, and TF-IDF features
-
-## Current status
-
-Implemented now:
-
-- Core package scaffold and packaging
-- `utils`, `io`, `eda`, `prep`, `viz`, `metrics`, `ml`, and `text`
-- Built-in help and about/version entry points
-- Tests across the implemented modules
-- Quickstart notebook in [examples/quickstart.ipynb](https://github.com/muhammadibrahim313/dsbro/blob/main/examples/quickstart.ipynb)
-
-Still planned:
-
-- Final polish for docs/examples
-- Additional ML/deep-learning extras over time
+`dsbro` is an all-in-one Python library for notebook-first data science. It pulls together setup, file I/O, EDA, preprocessing, visualization, metrics, ML baselines, and text helpers into one import with smart defaults and dark-theme visuals.
 
 ## Installation
 
-From PyPI:
-
 ```bash
 pip install dsbro
+pip install dsbro[ml]
+pip install dsbro[all]
 ```
 
-From GitHub:
-
-```bash
-pip install git+https://github.com/muhammadibrahim313/dsbro.git
-```
-
-For local development:
-
-```bash
-pip install -e ".[dev]"
-```
-
-Optional extras:
-
-```bash
-pip install -e ".[ml]"
-pip install -e ".[plotly]"
-pip install -e ".[all]"
-```
-
-`dsbro` is now available on PyPI, and the repository is still in active buildout.
-
-## Quick example
+## Quick Start
 
 ```python
 import dsbro
-import pandas as pd
-
 dsbro.setup()
-
-train = pd.DataFrame(
-    {
-        "age": [22, 35, 41, 28],
-        "city": ["lahore", "karachi", "lahore", "islamabad"],
-        "purchased": [0, 1, 1, 0],
-    }
-)
-
-overview = dsbro.eda.overview(train)
-processed, report = dsbro.prep.auto_preprocess(train, target="purchased")
-leaderboard = dsbro.ml.compare(train, target="purchased", cv=2)
+print(dsbro.version())
+dsbro.about()
 ```
-
-## Help system
-
-`dsbro` includes a built-in cheatsheet:
 
 ```python
-dsbro.help()
-dsbro.help("viz")
-dsbro.help("encode")
-dsbro.about()
-dsbro.version()
+from dsbro import eda
+eda.overview(df)
 ```
 
-## Notebook example
+```python
+from dsbro import prep
+df_small = prep.reduce_memory(df)
+df_clean = prep.fill_missing(df)
+```
 
-The repository includes a walkthrough notebook:
+```python
+from dsbro import viz
+viz.set_theme("dark")
+viz.heatmap(df.corr(numeric_only=True))
+```
+
+```python
+from dsbro import ml
+results = ml.compare(df, target="target", cv=3)
+results.head()
+```
+
+```python
+from dsbro import metrics
+metrics.regression_report(y_true, y_pred)
+```
+
+## Modules
+
+| Module | What it does |
+| --- | --- |
+| `utils` | Notebook setup, seeding, timers, system info, and environment helpers |
+| `io` | File loading, saving, peeking, searching, and submission utilities |
+| `eda` | Dataset overview, missing values, correlation, outliers, drift, and profiling |
+| `prep` | Encoding, scaling, missing-value handling, feature engineering, and memory reduction |
+| `viz` | Dark-theme charts for tabular analysis and model evaluation |
+| `metrics` | Quick regression and classification metrics in one place |
+| `ml` | Model comparison, training, tuning, blending, stacking, and OOF utilities |
+| `text` | Text cleaning, tokenization, n-grams, word frequency, and TF-IDF features |
+
+## Why dsbro?
+
+- You stop copy-pasting the same notebook boilerplate for setup, missing values, scaling, and memory reduction.
+- You get cleaner charts without writing styling code every time.
+- You avoid scattered imports across pandas, seaborn, sklearn, and utility snippets.
+- You can benchmark baseline models in one line instead of wiring cross-validation by hand.
+- You keep common Kaggle and Colab workflows in one small, consistent package.
+
+## For Kaggle Users
+
+Use `dsbro` to replace the usual notebook starter blocks:
+
+```python
+!pip install dsbro[all] -q
+
+import dsbro
+dsbro.setup()
+```
+
+Useful first calls:
+
+```python
+from dsbro import eda, prep, ml
+eda.profile(train_df, target="target")
+train_small = prep.reduce_memory(train_df)
+leaderboard = ml.compare(train_small, target="target", cv=3)
+```
+
+## For Colab Users
+
+Install in the first cell, then keep the rest of the notebook clean:
+
+```python
+!pip install dsbro[all] -q
+
+import dsbro
+dsbro.setup()
+```
+
+Colab-friendly flow:
+
+```python
+from dsbro import io, eda, viz
+data = io.load("/content/train.csv")
+eda.overview(data)
+viz.hist(data, col="target")
+```
+
+## Dependencies
+
+Core dependencies:
+
+- `numpy`
+- `pandas`
+- `matplotlib`
+- `seaborn`
+- `scikit-learn`
+
+Optional extras:
+
+- `dsbro[ml]`: `lightgbm`, `xgboost`, `catboost`, `optuna`
+- `dsbro[plotly]`: `plotly`
+- `dsbro[all]`: all optional extras together
+
+## Notebook Example
+
+The project includes a proper tutorial notebook:
 
 - [examples/quickstart.ipynb](https://github.com/muhammadibrahim313/dsbro/blob/main/examples/quickstart.ipynb)
-
-It demonstrates:
-
-- `dsbro.setup()`
-- `dsbro.eda.overview()`
-- `dsbro.prep.datetime_features()`
-- `dsbro.prep.text_features()`
-- `dsbro.prep.auto_preprocess()`
-- `dsbro.viz.bar()`
-- `dsbro.ml.compare()`
 
 ## Development
 
 ```bash
 pytest tests/ -v
 ruff check dsbro/ tests/
-ruff format dsbro/ tests/
 python -m build
 ```
 
-## Roadmap
+## Contributing
 
-- Expand example notebooks
-- Add GitHub Actions CI
-- Publish to TestPyPI, then PyPI
-- Continue polishing module docs and tutorial coverage
+We welcome contributions. Read [CONTRIBUTING.md](https://github.com/muhammadibrahim313/dsbro/blob/main/CONTRIBUTING.md) before opening a PR.
 
 ## License
 
 MIT. See [LICENSE](https://github.com/muhammadibrahim313/dsbro/blob/main/LICENSE).
 
-## Contributing
+## Author
 
-We welcome contributions! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+Muhammad Ibrahim Qasmi  
+[Website](https://ibrahimqasmi.com)  
+[GitHub](https://github.com/muhammadibrahim313/dsbro)

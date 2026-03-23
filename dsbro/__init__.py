@@ -43,8 +43,8 @@ def about() -> str:
         f"dsbro {__version__}\n"
         "Your Data Science Bro. One import away.\n"
         "Author: Muhammad Ibrahim Qasmi\n"
-        "Homepage: https://ibrahimqasmi.com\n"
-        "GitHub: https://github.com/muhammadibrahim313/dsbro"
+        "Homepage (GitHub): https://github.com/muhammadibrahim313/dsbro\n"
+        "Website: https://ibrahimqasmi.com"
     )
     print(message)
     return message
