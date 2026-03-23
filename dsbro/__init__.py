@@ -20,6 +20,17 @@ _MODULES = {
     "text": text,
 }
 
+_MODULE_SUMMARIES = {
+    "io": "File and directory utilities",
+    "eda": "Exploratory data analysis helpers",
+    "prep": "Preprocessing and feature engineering",
+    "viz": "Visualization helpers with dsbro theming",
+    "ml": "Model comparison, training, tuning, and ensembles",
+    "metrics": "Classification and regression metrics",
+    "utils": "Notebook and environment utilities",
+    "text": "Text cleaning and NLP-style helpers",
+}
+
 
 def version() -> str:
     """Return the installed dsbro version string."""
@@ -39,12 +50,16 @@ def about() -> str:
 
 
 def help(topic: str | None = None) -> str:
-    """Print a simple help summary for modules or functions."""
+    """Print a categorized help summary for dsbro modules or functions."""
     if topic is None:
         lines = ["dsbro available modules:"]
         for module_name, module in _MODULES.items():
-            public_functions = _public_functions(module)
-            lines.append(f"- {module_name}: {', '.join(public_functions) or 'coming soon'}")
+            lines.append(f"- {module_name}: {_MODULE_SUMMARIES.get(module_name, '')}")
+            for function_name in _public_functions(module):
+                function = getattr(module, function_name)
+                signature = inspect.signature(function)
+                summary = _first_line(inspect.getdoc(function))
+                lines.append(f"  {function_name}{signature}: {summary}")
         message = "\n".join(lines)
         print(message)
         return message
@@ -52,7 +67,7 @@ def help(topic: str | None = None) -> str:
     normalized = topic.strip().lower()
     if normalized in _MODULES:
         module = _MODULES[normalized]
-        lines = [f"dsbro.{normalized}"]
+        lines = [f"dsbro.{normalized} - {_MODULE_SUMMARIES.get(normalized, '')}"]
         for function_name in _public_functions(module):
             function = getattr(module, function_name)
             signature = inspect.signature(function)
@@ -82,7 +97,7 @@ def _public_functions(module: Any) -> list[str]:
             continue
         if inspect.getmodule(member) is module:
             names.append(name)
-    return names
+    return sorted(names)
 
 
 def _first_line(docstring: str | None) -> str:
