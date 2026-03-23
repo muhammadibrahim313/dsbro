@@ -1,11 +1,12 @@
 <p align="center">
-  <img src="imgs/dsbro.png" alt="dsbro logo" width="320">
+  <img src="https://raw.githubusercontent.com/muhammadibrahim313/dsbro/main/imgs/dsbro.png" alt="dsbro logo" width="320">
 </p>
 
 # dsbro
 
 [![Python](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org/)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![PyPI](https://img.shields.io/pypi/v/dsbro.svg)](https://pypi.org/project/dsbro/)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/muhammadibrahim313/dsbro/blob/main/LICENSE)
 [![Repo](https://img.shields.io/badge/github-dsbro-black.svg)](https://github.com/muhammadibrahim313/dsbro)
 
 Your Data Science Bro. One import away.
@@ -33,7 +34,7 @@ Implemented now:
 - `utils`, `io`, `eda`, `prep`, `viz`, `metrics`, `ml`, and `text`
 - Built-in help and about/version entry points
 - Tests across the implemented modules
-- Quickstart notebook in [examples/quickstart.ipynb](examples/quickstart.ipynb)
+- Quickstart notebook in [examples/quickstart.ipynb](https://github.com/muhammadibrahim313/dsbro/blob/main/examples/quickstart.ipynb)
 
 Still planned:
 
@@ -41,6 +42,18 @@ Still planned:
 - Additional ML/deep-learning extras over time
 
 ## Installation
+
+From PyPI:
+
+```bash
+pip install dsbro
+```
+
+From GitHub:
+
+```bash
+pip install git+https://github.com/muhammadibrahim313/dsbro.git
+```
 
 For local development:
 
@@ -56,7 +69,7 @@ pip install -e ".[plotly]"
 pip install -e ".[all]"
 ```
 
-PyPI packaging is scaffolded, but this repository is still in active buildout.
+`dsbro` is now available on PyPI, and the repository is still in active buildout.
 
 ## Quick example
 
@@ -95,7 +108,7 @@ dsbro.version()
 
 The repository includes a walkthrough notebook:
 
-- [examples/quickstart.ipynb](examples/quickstart.ipynb)
+- [examples/quickstart.ipynb](https://github.com/muhammadibrahim313/dsbro/blob/main/examples/quickstart.ipynb)
 
 It demonstrates:
 
@@ -125,4 +138,4 @@ python -m build
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+MIT. See [LICENSE](https://github.com/muhammadibrahim313/dsbro/blob/main/LICENSE).

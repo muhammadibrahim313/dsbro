@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "dsbro"
 version = "0.1.0"
 description = "Your Data Science Bro. One import away."
-readme = "README.md"
+readme = { file = "README.md", content-type = "text/markdown" }
 requires-python = ">=3.9"
 license = { text = "MIT" }
 authors = [
@@ -24,7 +24,7 @@ classifiers = [
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
-  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: Scientific/Engineering :: Information Analysis",
 ]
 dependencies = [
   "matplotlib>=3.7",
@@ -36,11 +36,8 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-  "build>=1.2",
   "pytest>=8.0",
-  "pytest-cov>=5.0",
   "ruff>=0.11",
-  "twine>=5.1",
 ]
 ml = [
   "catboost>=1.2",
@@ -49,21 +46,19 @@ ml = [
   "xgboost>=2.0",
 ]
 plotly = ["plotly>=5.22"]
-deep = ["torch>=2.2"]
 all = [
   "catboost>=1.2",
   "lightgbm>=4.0",
   "optuna>=3.6",
   "plotly>=5.22",
-  "torch>=2.2",
   "xgboost>=2.0",
 ]
 
 [project.urls]
-Homepage = "https://github.com/ibrahimqasmi/dsbro"
-Documentation = "https://github.com/ibrahimqasmi/dsbro"
-Repository = "https://github.com/ibrahimqasmi/dsbro"
-Issues = "https://github.com/ibrahimqasmi/dsbro/issues"
+Homepage = "https://github.com/muhammadibrahim313/dsbro"
+Documentation = "https://github.com/muhammadibrahim313/dsbro"
+Repository = "https://github.com/muhammadibrahim313/dsbro"
+Issues = "https://github.com/muhammadibrahim313/dsbro/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["dsbro"]
