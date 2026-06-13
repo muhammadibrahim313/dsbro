@@ -139,7 +139,7 @@ Optional extras:
 
 ## Notebook Example
 
-The project includes a proper tutorial notebook:
+The project includes a proper TUTORIAL Notebook:
 
 - [examples/quickstart.ipynb](https://github.com/muhammadibrahim313/dsbro/blob/main/examples/quickstart.ipynb)
 
